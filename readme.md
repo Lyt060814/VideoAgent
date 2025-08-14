@@ -115,6 +115,10 @@ Our system introduces three key innovations for automated video processing. **In
 
 - 💡 The agent then **decomposes user input** into **fine-grained sub-queries** that are both visually and semantically aligned. This sophisticated breakdown enables **enhanced video retrieval** by matching user intentions with the most relevant visual content in the database.
 
+<div align="center">
+    <img src='./assets/framework.jpg' /><br>
+</div>
+
 ---
 
 ## 🔧Evaluation
