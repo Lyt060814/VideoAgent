@@ -141,7 +141,7 @@ graph TB
 <td align="center">✅</td>
 </tr>
 <tr>
-<td align="center">SoundFX Tools</td>
+<td align="center">Sound Effects Tools</td>
 <td align="center">✅</td>
 <td align="center">—</td>
 <td align="center">—</td>
