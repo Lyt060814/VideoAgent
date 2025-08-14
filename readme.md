@@ -73,6 +73,80 @@ graph TB
 
 </div>
 
+
+<div align="center">
+<table>
+<tr>
+<th align="center"> </th>
+<th align="center">VideoAgent</th>
+<th align="center">Director</th>
+<th align="center">Funclip</th>
+<th align="center">NarratoAI</th>
+<th align="center">NotebookLM</th>
+</tr>
+<tr>
+<td align="center">Beat-synced Edits</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">Storytelling Video</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">Video Overview</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
+</tr>
+<tr>
+<td align="center">Meme Video Remaking</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">Song Remixes</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">Cross-lingual Adaptations</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+</tr>
+<tr>
+<td align="center">Video Q&A</td>
+<td align="center">✅</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">—</td>
+<td align="center">✅</td>
+</tr>
+</table>
+</div>
+
+
+
+
+
 ---
 
 ## 📑 Table of Contents
