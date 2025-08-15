@@ -135,7 +135,7 @@ graph TB
 <tr>
 <td align="center">Video Q&A</td>
 <td align="center">✅</td>
-<td align="center">—</td>
+<td align="center">✅</td>
 <td align="center">—</td>
 <td align="center">—</td>
 <td align="center">✅</td>
