@@ -88,11 +88,10 @@ class NewsContentGenerator(BaseTool):
         """
         Load content from a .lab file
         .lab files typically contain timestamped transcriptions
-        Format can vary, but often has format: [start_time end_time transcription]
+        Directly reads all content
         """
         try:
             logger.info(f"Loading .lab file: {lab_path}")
-            text_content = ""
             
             encodings_to_try = ['utf-8', 'gb18030', 'gbk', 'gb2312', 'cp1252', 'iso-8859-1']
             
@@ -100,15 +99,7 @@ class NewsContentGenerator(BaseTool):
             for encoding in encodings_to_try:
                 try:
                     with open(lab_path, 'r', encoding=encoding, errors='replace') as file:
-                        lines = file.readlines()
-                        
-                        # Extract just the transcription part from each line
-                        for line in lines:
-                            parts = line.strip().split(None, 2)  # Split by whitespace, max 2 splits
-                            if len(parts) >= 3:  # If we have at least 3 parts (start, end, text)
-                                text_content += parts[2] + " "
-                            elif len(parts) > 0:  # If format is different, just add everything
-                                text_content += line.strip() + " "
+                        text_content = file.read()
                         
                         logger.info(f"Successfully read .lab file with encoding: {encoding}")
                         return text_content.strip()
@@ -119,16 +110,7 @@ class NewsContentGenerator(BaseTool):
             logger.info("Trying binary reading approach for .lab file")
             with open(lab_path, 'rb') as file:
                 content = file.read().decode('utf-8', errors='replace')
-                lines = content.splitlines()
-                
-                for line in lines:
-                    parts = line.strip().split(None, 2)
-                    if len(parts) >= 3:
-                        text_content += parts[2] + " "
-                    elif len(parts) > 0:
-                        text_content += line.strip() + " "
-                
-                return text_content.strip()
+                return content.strip()
                 
         except Exception as e:
             logger.error(f"Error loading .lab file: {e}")
