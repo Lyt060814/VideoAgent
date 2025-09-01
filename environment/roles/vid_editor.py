@@ -101,30 +101,48 @@ class VideoEditor(BaseTool):
     def _analyze_frames(self, frames: List[Image.Image], description: str, exact_duration: float) -> int:
         """Use API to analyze frames and select the best starting frame"""
         try:
-            # Convert frames to base64
-            frame_data = []
+            # Create multimodal content array
+            content = [
+                {
+                    "type": "text",
+                    "text": (
+                        f"You are analyzing a video with {len(frames)} consecutive video frames, fps setting is 1. "
+                        f"The required clip duration is {exact_duration:.3f} seconds.\n"
+                        f"Find the best sequence matching this description:\n"
+                        f"\"{description}\"\n\n"
+                        f"Requirements:\n"
+                        f"1. You must analyze ALL {len(frames)} frames to find the best consecutive sequence\n"
+                        f"2. Choose a starting frame (0-{len(frames)-1}) that allows for a {exact_duration:.3f}s clip\n"
+                        f"3. Maximum starting frame should be {len(frames) - math.ceil(exact_duration)} to fit the duration\n"
+                        f"4. Return ONLY a single number - the starting frame number (0-{len(frames)-1})\n"
+                        f"5. The returned consecutive sequence should align with the scene description\n"
+                        f"6. Select consecutive frames with high-quality visuals and scene consistency\n\n"
+                        f"7. Do not answer anything unrelated, return only exact one single number\n\n"
+                        f"Here are the {len(frames)} frames for analysis:"
+                    )
+                }
+            ]
+            
+            # Add each frame as an image input
             for i, frame in enumerate(frames):
                 base64_image = self._encode_image_to_base64(frame)
-                frame_data.append(f"Frame {i}: {base64_image}")
+                content.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": base64_image
+                    }
+                })
             
-            prompt = (
-                f"You are analyzing a video with {len(frames)} consecutive video frames, fps setting is 1. "
-                f"The required clip duration is {exact_duration:.3f} seconds.\n"
-                f"Find the best sequence matching this description:\n"
-                f"\"{description}\"\n\n"
-                f"Requirements:\n"
-                f"1. You must analyze ALL {len(frames)} frames to find the best consecutive sequence\n"
-                f"2. Choose a starting frame (0-{len(frames)-1}) that allows for a {exact_duration:.3f}s clip\n"
-                f"3. Maximum starting frame should be {len(frames) - math.ceil(exact_duration)} to fit the duration\n"
-                f"4. Return ONLY a single number - the starting frame number (0-{len(frames)-1})\n"
-                f"5. The returned consecutive sequence should align with the scene description\n"
-                f"6. Select consecutive frames with high-quality visuals and scene consistency\n\n"
-                f"7. Do not answer anything unrelated, return only extact one single number\n\n"
-                f"###########Here are the frames###########:\n" + "\n".join(frame_data)
-            )
+            # Call Gemini API with multimodal content
+            response = gemini(user=content)
             
-            # Call Gemini API with retry logic
-            response_text = self._call_api(prompt)
+            # Extract response content
+            if hasattr(response, 'choices') and response.choices:
+                response_text = response.choices[0].message.content.strip()
+            else:
+                response_text = str(response).strip()
+            
+            print(f"API call successful")
             
             # Extract frame number from response
             frame_numbers = re.findall(r'\d+', response_text)
@@ -143,7 +161,7 @@ class VideoEditor(BaseTool):
                 return 0
                 
         except Exception as e:
-            print(f"Error in Gemini analysis after all retries: {str(e)}")
+            print(f"Error in Gemini analysis: {str(e)}")
             print("Falling back to frame 0")
             return 0  # Fallback to first frame
 
