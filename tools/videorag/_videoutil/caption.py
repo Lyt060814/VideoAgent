@@ -23,14 +23,16 @@ def image_to_base64(image):
     return img_str
 
 def frames_to_description(video_frames):
-    """Convert video frames to text description for Gemini"""
-    frame_descriptions = []
+    """Convert video frames to base64 format for Gemini API"""
+    frame_data = []
     for i, frame in enumerate(video_frames):
+        base64_image = image_to_base64(frame)
+        frame_data.append({
+            "frame_number": i + 1,
+            "image_data": base64_image
+        })
+    return frame_data
 
-        frame_descriptions.append(f"Frame {i+1}: Video frame at timestamp showing visual content")
-    
-    return "\n".join(frame_descriptions)
-    
 def segment_caption(video_name, video_path, segment_index2name, transcripts, segment_times_info, caption_result, error_queue):
     try:
         with VideoFileClip(video_path) as video:
@@ -38,35 +40,47 @@ def segment_caption(video_name, video_path, segment_index2name, transcripts, seg
                 frame_times = segment_times_info[index]["frame_times"]
                 video_frames = encode_video(video, frame_times)
                 
-                # Create a prompt that includes frame information and transcript context
-                transcript_context = transcripts[index] if transcripts[index].strip() else "No transcript available"
-                frames_info = frames_to_description(video_frames)
+                # Get frame data with base64 images
+                frame_data = frames_to_description(video_frames)
                 
-                query = f"""You are analyzing a video segment. Here's the available information:
+                transcript_context = transcripts[index] if transcripts[index].strip() else "No transcript available"
+                
+                # Create content array with text and images
+                content = [
+                    {
+                        "type": "text",
+                        "text": f"""You are analyzing a video segment. Here's the available information:
 
                 Transcript: {transcript_context}
-
-                Video frames: {len(video_frames)} frames captured at different timestamps
-                {frames_info}
-
-                Based on this information, provide a detailed scene description of the video. Focus on:
-                - Visual elements that would be present in the video
-                - Actions and movements that likely occur
+                
+                I'm providing {len(video_frames)} frames from this video segment. Based on the transcript and these visual frames, provide a detailed scene description focusing on:
+                - Visual elements present in the video
+                - Actions and movements occurring
                 - Setting and environment details
-                - Any characters or objects that would be visible
+                - Characters or objects visible
                 - Overall scene composition and mood
-
-                Directly provide a comprehensive description without including unrelated information.
+                
+                Provide a comprehensive description without including unrelated information.
                 
                 ##############Example Output##############
                 
                 A bustling city street with people walking, cars passing by, and tall buildings in the background. The scene captures the energy of urban life with pedestrians crossing the road, cyclists navigating through traffic.
-                
                 """
+                    }
+                ]
+                
+                # Add each frame as an image input
+                for frame_info in frame_data:
+                    content.append({
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{frame_info['image_data']}"
+                        }
+                    })
 
                 try:
                     response = gemini(
-                        user=query
+                        user=content  # Send the content array with text + images
                     )
                     
                     segment_caption_text = response.choices[0].message.content
@@ -74,7 +88,6 @@ def segment_caption(video_name, video_path, segment_index2name, transcripts, seg
                     
                 except Exception as api_error:
                     print(f"Gemini API error for segment {index}: {str(api_error)}")
-                    # Fallback to a basic description based on transcript
                     fallback_caption = f"Video segment containing: {transcript_context}" if transcript_context != "No transcript available" else "Video segment with visual content"
                     caption_result[index] = fallback_caption
                     
