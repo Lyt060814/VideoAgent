@@ -18,7 +18,7 @@ from environment.agents.base import BaseTool
 
 class VideoEditor(BaseTool):
     """
-    Agent that retrieves matching video clips from video_dir based on timestamp file, ultimately merging the clips and adding audio.
+    Agent that edit each retrieved video clips from video_dir based on timestamp file and, ultimately merging the fine-grained clips and adding audio.
     Prerequisites: Requires upstream agents to provide video frame timestamps (unless explicitly specified that user provides video frame timestamps.)
     Note: VideoPreloader, VideoSearcher, and VideoEditor need to be called together.
     """
