@@ -9,7 +9,7 @@ from environment.agents.base import BaseTool
 
 class VideoSearcher(BaseTool):
     """
-    Agent that retrieves matching video clips from video_dir based on timestamp file, ultimately merging the segments and adding audio    Prerequisite: VideoPreloader must be called and upstream agents need to provide video scene file (unless explicitly specified that user provides video scene file, which not timestamp file.)
+    Agent that retrieves matching video clips from video_dir based on multiple semantic subquries: VideoPreloader must be called and upstream agents need to provide video scene file (unless explicitly specified that user provides video scene file, which not timestamp file.)
     Note: VideoPreloader, VideoSearcher, and VideoEditor need to be called together.
     """
 
