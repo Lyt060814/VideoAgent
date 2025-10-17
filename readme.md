@@ -5,7 +5,7 @@
 <!-- # Open Agentic Video Intelligence -->
 <br>
 
-**🌟 Comprehensive Video Intelligence: <br> An All-in-One Framework for Understanding, Editing, and Generating**
+**🌟 Comprehensive Video Intelligence: <br> An All-in-One Framework for Understanding, Editing, and Generation**
 
 <div align="center">
 
