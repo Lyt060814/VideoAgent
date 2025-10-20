@@ -88,17 +88,18 @@ class VideoSearcher(BaseTool):
         try:
             # Make sure VideoRAG is loaded
             if not self._load_videorag():
-                return
+                self.logger.error("VideoRAG failed to load")
+                return {"status": "failure", "error": "Failed to load VideoRAG modules", "matches": []}
             # Load the scene file
             with open(scene_file, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 
             # Extract the content
             segment_scene = data.get("segment_scene", "")
-            
+
             if not segment_scene:
                 self.logger.warning("Empty segment_scene found in the JSON file")
-                return
+                return {"status": "failure", "error": "Empty segment_scene in JSON", "matches": []}
                 
             # Use the content as query
             query = segment_scene

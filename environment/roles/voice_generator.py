@@ -23,8 +23,8 @@ class VoiceGenerator(BaseTool):
         cosyvoice_dir = os.path.join(self.project_root, 'tools', 'CosyVoice')
         matcha_dir = os.path.join(cosyvoice_dir, 'third_party', 'Matcha-TTS')
 
-        # Set up paths
-        self.model_path = os.path.join(self.project_root, 'tools', 'CosyVoice', 'pretrained_models', 'CosyVoice2-0.5B')
+        # Set up paths - use relative path for CosyVoice model (it will handle the full path internally)
+        self.model_path = os.path.join(cosyvoice_dir, 'pretrained_models', 'CosyVoice2-0.5B')
         self.video_edit_dir = os.path.join(self.project_root, 'dataset', 'video_edit')
         self.scene_output_dir = os.path.join(self.video_edit_dir, 'scene_output')
         self.audio_analysis_dir = os.path.join(self.video_edit_dir, 'audio_analysis')

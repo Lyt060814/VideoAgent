@@ -8,14 +8,8 @@ def speech_to_text(video_name, working_dir, segment_index2name, audio_output_for
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
     
-    # Get the current file's directory 
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    
-
-    tools_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    
     # Path to the local whisper model
-    model_path = os.path.join(tools_dir, 'whisper-large-v3-turbo')
+    model_path = '/private/tmp/whisper-large-v3-turbo'
     
     # Check if the model directory exists
     if not os.path.exists(model_path):

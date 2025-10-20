@@ -18,7 +18,7 @@ class NanoVectorDBVideoSegmentStorage(BaseVectorStorage):
     segment_retrieval_top_k: float = 2
     
     def __post_init__(self):
-        
+
         self._client_file_name = os.path.join(
             self.global_config["working_dir"], f"vdb_{self.namespace}.json"
         )
@@ -29,25 +29,22 @@ class NanoVectorDBVideoSegmentStorage(BaseVectorStorage):
         self.top_k = self.global_config.get(
             "segment_retrieval_top_k", self.segment_retrieval_top_k
         )
-    
+
+    def _load_imagebind_model(self):
+        """Load ImageBind model with appropriate device (Mac compatible)"""
+        # PyTorch 2.3.1+ supports Conv3D on MPS
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        embedder = imagebind_model.imagebind_huge(pretrained=True)
+        if device == "mps":
+            embedder = embedder.to(device)
+        else:
+            embedder = embedder.cpu()
+        print(f"ImageBind model loaded on device: {device}")
+        return embedder
+
     async def upsert(self, video_name, segment_index2name, video_output_format):
-        import os
-        
-        # Determine the project root directory
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
-        
-        # Store the original working directory
-        original_dir = os.getcwd()
-        
-        # Change to the project root directory
-        os.chdir(project_root)
-        
-        # Load the model (this will look for .checkpoints relative to the project root)
-        embedder = imagebind_model.imagebind_huge(pretrained=True).cuda()
-        
-        # Change back to the original directory
-        os.chdir(original_dir)
+        # Load the ImageBind model
+        embedder = self._load_imagebind_model()
         embedder.eval()
         
         logger.info(f"Inserting {len(segment_index2name)} segments to {self.namespace}")
@@ -83,23 +80,8 @@ class NanoVectorDBVideoSegmentStorage(BaseVectorStorage):
 
 
     async def query(self, query: str):
-        import os
-        
-        # Determine the project root directory
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
-        
-        # Store the original working directory
-        original_dir = os.getcwd()
-        
-        # Change to the project root directory
-        os.chdir(project_root)
-        
-        # Load the model (this will look for .checkpoints relative to the project root)
-        embedder = imagebind_model.imagebind_huge(pretrained=True).cuda()
-        
-        # Change back to the original directory
-        os.chdir(original_dir)
+        # Load the ImageBind model
+        embedder = self._load_imagebind_model()
         embedder.eval()
         
         embedding = encode_string_query(query, embedder)

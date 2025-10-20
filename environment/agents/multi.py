@@ -301,6 +301,10 @@ Please Only output pure JSON format:
             agent_instance = agent_class()
             result = agent_instance.execute(**inputs)
 
+            # Check if result is None
+            if result is None:
+                raise RuntimeError(f"Agent {agent_name} returned None. This usually means an error occurred during execution.")
+
             # 6. 处理输出参数
             for output in agent_config["outputs"]:
                 output_value = result.get(output["name"])
